@@ -1,40 +1,33 @@
 import { calculateTax, TaxResult, SPECIAL_DEDUCTIONS, HOUSING_FUND_RATES, SocialInsurance } from '../common/TaxCalculator'
 import { promptAction } from '@kit.ArkUI'
+import { hilog } from '@kit.PerformanceAnalysisKit'
 
-/**
- * 个税计算器 - 主页面
- * 鸿蒙 5.0 / API 12
- */
 @Entry
 @Component
 struct Index {
-  // === 输入状态 ===
   @State salaryText: string = ''
   @State socialBaseText: string = ''
-  @State housingFundRate: number = 7    // 默认7%
+  @State housingFundRate: number = 7
   @State deductions: SelectOption[] = SPECIAL_DEDUCTIONS.map(d => {
     return new SelectOption(d.name, d.amount.toString(), false)
   })
-
-  // === 结果状态 ===
   @State hasCalculated: boolean = false
   @State result: TaxResult | null = null
 
-  // === 计算 ===
+  aboutToAppear(): void {
+    hilog.info(0x0001, 'TaxCalc', 'Index aboutToAppear')
+  }
+
   doCalculate(): void {
     const salary = parseFloat(this.salaryText)
     if (isNaN(salary) || salary <= 0) {
       promptAction.showToast({ message: '请输入有效的税前工资', duration: 2000 })
       return
     }
-
     const socialBase = parseFloat(this.socialBaseText) || 0
-
-    // 同步选中状态
     SPECIAL_DEDUCTIONS.forEach((d, i) => {
       d.selected = this.deductions[i].checked
     })
-
     this.result = calculateTax(salary, this.housingFundRate, socialBase, SPECIAL_DEDUCTIONS)
     this.hasCalculated = true
   }
@@ -42,8 +35,7 @@ struct Index {
   build() {
     Scroll() {
       Column({ space: 16 }) {
-        // ========== 标题 ==========
-        Text('个税计算器')
+        Text('💰 个税计算器')
           .fontSize(24)
           .fontWeight(FontWeight.Bold)
           .fontColor('#1a1a2e')
@@ -55,16 +47,9 @@ struct Index {
           .fontColor('#9ca3af')
           .width('100%')
 
-        // ========== 税前工资 ==========
-        this.inputCard(
-          '💰 税前月工资',
-          '请输入税前月收入',
-          '元',
-          $salaryText,
-          (value: string) => { this.salaryText = value }
-        )
+        this.inputCard('💰 税前月工资', '请输入税前月收入', '元', this.salaryText,
+          (value: string) => { this.salaryText = value })
 
-        // ========== 社保公积金 ==========
         Column() {
           Text('📋 社保与公积金')
             .fontSize(15)
@@ -73,7 +58,6 @@ struct Index {
             .width('100%')
             .margin({ bottom: 12 })
 
-          // 社保缴费基数
           Row({ space: 8 }) {
             Text('社保缴费基数')
               .fontSize(14)
@@ -98,7 +82,6 @@ struct Index {
             .fontColor('#d1d5db')
             .margin({ top: 4 })
 
-          // 公积金比例
           Row({ space: 8 }) {
             Text('公积金比例')
               .fontSize(14)
@@ -111,7 +94,7 @@ struct Index {
               step: 1
             })
               .layoutWeight(1)
-              .showTips(true, ` ${this.housingFundRate}% `)
+              .showTips(true, `${this.housingFundRate}%`)
               .onChange((value: number) => { this.housingFundRate = value })
             Text(`${this.housingFundRate}%`)
               .fontSize(14)
@@ -127,7 +110,6 @@ struct Index {
         .backgroundColor('#ffffff')
         .borderRadius(12)
 
-        // ========== 专项附加扣除 ==========
         Column() {
           Text('📝 专项附加扣除（多选）')
             .fontSize(15)
@@ -169,8 +151,7 @@ struct Index {
         .backgroundColor('#ffffff')
         .borderRadius(12)
 
-        // ========== 计算按钮 ==========
-        Button('计算个税')
+        Button('📊 计算个税')
           .type(ButtonType.Capsule)
           .fontSize(16)
           .fontWeight(FontWeight.Medium)
@@ -181,12 +162,10 @@ struct Index {
           .width('100%')
           .onClick(() => { this.doCalculate() })
 
-        // ========== 结果卡片 ==========
         if (this.hasCalculated && this.result) {
           this.resultCard(this.result)
         }
 
-        // ========== 品牌底部 ==========
         Row() {
           Text('口袋万物')
             .fontSize(12)
@@ -212,14 +191,7 @@ struct Index {
     .scrollBar(BarState.Off)
   }
 
-  // ========== 输入卡片组件 ==========
-  @Builder inputCard(
-    label: string,
-    placeholder: string,
-    unit: string,
-    $$value: string,
-    onChange: (value: string) => void
-  ) {
+  @Builder inputCard(label: string, placeholder: string, unit: string, value: string, onChange: (value: string) => void) {
     Column() {
       Text(label)
         .fontSize(15)
@@ -228,7 +200,7 @@ struct Index {
         .width('100%')
         .margin({ bottom: 12 })
       Row({ space: 8 }) {
-        TextInput({ placeholder: placeholder, text: $$value })
+        TextInput({ placeholder: placeholder, text: value })
           .type(InputType.Number)
           .fontSize(16)
           .layoutWeight(1)
@@ -250,7 +222,6 @@ struct Index {
     .borderRadius(12)
   }
 
-  // ========== 结果卡片 ==========
   @Builder resultCard(result: TaxResult) {
     Column({ space: 12 }) {
       Text('📊 计算结果')
@@ -259,7 +230,6 @@ struct Index {
         .fontColor('#374151')
         .width('100%')
 
-      // 大数字：税后收入
       Column() {
         Text('税后月收入')
           .fontSize(12)
@@ -279,18 +249,13 @@ struct Index {
       Divider()
         .color('#f3f4f6')
 
-      // 明细
       this.resultRow('税前工资', `${result.salaryBeforeTax.toLocaleString()} 元`)
       this.resultRow('五险一金', `- ${result.fiveInsuranceTotal.toFixed(2)} 元`)
-      this.resultRow('  其中社保', `${result.socialInsurance.toFixed(2)} 元`)
-      this.resultRow('  其中公积金', `${result.housingFund.toFixed(2)} 元`)
-      this.resultRow('专项扣除合计', `${result.specialDeductionTotal.toLocaleString()} 元`)
       this.resultRow('应纳税所得额', `${result.taxableIncome.toFixed(2)} 元`)
       this.resultRow('适用税率', `${(result.taxRate * 100).toFixed(0)}%`)
       this.resultRow('个人所得税', `- ${result.incomeTax.toLocaleString()} 元`)
       this.resultRow('实际税负率', `${result.effectiveRate.toFixed(2)}%`)
 
-      // 税后收入高亮
       Row({ space: 4 }) {
         Text('💵 税后到手')
           .fontSize(14)
@@ -304,7 +269,6 @@ struct Index {
       .width('100%')
       .padding({ top: 8, bottom: 4 })
 
-      // 提示
       if (result.incomeTax === 0) {
         Text('🎉 无需缴纳个税')
           .fontSize(13)
@@ -333,7 +297,6 @@ struct Index {
   }
 }
 
-// 选项数据类
 @Observed
 class SelectOption {
   name: string

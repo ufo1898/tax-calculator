@@ -1,0 +1,9 @@
+{
+  "name": "taxcalculator",
+  "version": "1.0.0",
+  "description": "个税计算器 - 口袋万物系列",
+  "main": "",
+  "author": "pocketall",
+  "license": "ISC",
+  "dependencies": {}
+}

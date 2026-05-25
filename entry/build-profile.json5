@@ -1,0 +1,16 @@
+{
+  "compileSdkVersion": "5.0.0(12)",
+  "compatibleSdkVersion": "5.0.0(12)",
+  "apiType": "stageMode",
+  "buildOption": {
+    "sourceOption": {
+      "workers": []
+    }
+  },
+  "targets": [
+    {
+      "name": "default",
+      "applyToProducts": ["default"]
+    }
+  ]
+}

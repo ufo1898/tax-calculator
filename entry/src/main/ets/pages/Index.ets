@@ -193,9 +193,21 @@ struct Index {
           this.resultCard(this.result)
         }
 
-        // 底部占位
-        Blank()
-          .height(32)
+        // ========== 品牌底部 ==========
+        Row() {
+          Text('口袋万物')
+            .fontSize(12)
+            .fontColor('#9ca3af')
+          Text(' · ')
+            .fontSize(12)
+            .fontColor('#d1d5db')
+          Text('www.koudai.cool')
+            .fontSize(12)
+            .fontColor('#6366f1')
+        }
+        .width('100%')
+        .justifyContent(FlexAlign.Center)
+        .padding({ top: 24, bottom: 32 })
       }
       .width('100%')
       .padding({ left: 16, right: 16 })

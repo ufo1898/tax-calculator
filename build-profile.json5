@@ -1,12 +1,26 @@
 {
-  "compileSdkVersion": "5.0.0(12)",
-  "compatibleSdkVersion": "5.0.0(12)",
-  "products": [
-    {
-      "name": "default",
-      "signingConfig": "default"
-    }
-  ],
+  "app": {
+    "signingConfigs": [],
+    "products": [
+      {
+        "name": "default",
+        "signingConfig": "default",
+        "targetSdkVersion": "6.1.0(23)",
+        "compatibleSdkVersion": "5.0.0(12)",
+        "runtimeOS": "HarmonyOS",
+        "buildOption": {
+          "strictMode": {
+            "caseSensitiveCheck": true,
+            "useNormalizedOHMUrl": true
+          }
+        }
+      }
+    ],
+    "buildModeSet": [
+      { "name": "debug" },
+      { "name": "release" }
+    ]
+  },
   "modules": [
     {
       "name": "entry",

@@ -29,13 +29,6 @@ struct Index {
     }
 
     const socialBase = parseFloat(this.socialBaseText) || 0
-    const selectedDeductions = this.deductions
-      .filter((_, i) => SPECIAL_DEDUCTIONS[i] && this.deductions[i].checked)
-      .map((_, i) => {
-        const d = SPECIAL_DEDUCTIONS[i]
-        d.selected = true
-        return d
-      })
 
     // 同步选中状态
     SPECIAL_DEDUCTIONS.forEach((d, i) => {

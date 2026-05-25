@@ -1,16 +1,23 @@
 {
-  "compileSdkVersion": "5.0.0(12)",
-  "compatibleSdkVersion": "5.0.0(12)",
   "apiType": "stageMode",
   "buildOption": {
-    "sourceOption": {
-      "workers": []
-    }
   },
+  "buildOptionSet": [
+    {
+      "name": "release",
+      "arkOptions": {
+        "obfuscation": {
+          "ruleOptions": {
+            "enable": false,
+            "files": ["./obfuscation-rules.txt"]
+          }
+        }
+      }
+    }
+  ],
   "targets": [
     {
-      "name": "default",
-      "applyToProducts": ["default"]
+      "name": "default"
     }
   ]
 }

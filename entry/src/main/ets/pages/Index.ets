@@ -66,6 +66,11 @@ struct Index {
           .fontColor('#9ca3af')
           .width('100%')
 
+        Text('v1.1.0')
+          .fontSize(11)
+          .fontColor('#d1d5db')
+          .width('100%')
+
         this.inputCard('💰 税前月工资', '请输入税前月收入', '元', this.salaryText,
           (value: string) => { this.salaryText = value })
 
@@ -208,11 +213,11 @@ struct Index {
             Divider()
               .color('#f3f4f6')
 
-            this.resultRow('税前工资', `${this.result!.salaryBeforeTax} 元`)
-            this.resultRow('五险一金', `- ${this.result!.fiveInsuranceTotal.toFixed(2)} 元`)
-            this.resultRow('应纳税所得额', `${this.result!.taxableIncome.toFixed(2)} 元`)
+            this.resultRow('税前工资', `${this.result!.salaryBeforeTax.toLocaleString()} 元`)
+            this.resultRow('五险一金', `- ${this.result!.fiveInsuranceTotal.toLocaleString()} 元`)
+            this.resultRow('应纳税所得额', `${this.result!.taxableIncome.toLocaleString()} 元`)
             this.resultRow('适用税率', `${(this.result!.taxRate * 100).toFixed(0)}%`)
-            this.resultRow('个人所得税', `- ${this.result!.incomeTax} 元`)
+            this.resultRow('个人所得税', `- ${this.result!.incomeTax.toLocaleString()} 元`)
             this.resultRow('实际税负率', `${this.result!.effectiveRate.toFixed(2)}%`)
 
             Row({ space: 4 }) {

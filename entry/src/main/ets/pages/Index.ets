@@ -1,4 +1,4 @@
-import { calculateTax, TaxResult, SPECIAL_DEDUCTIONS, HOUSING_FUND_RATES, SocialInsurance } from '../common/TaxCalculator'
+import { calculateTax, TaxResult, SPECIAL_DEDUCTIONS, HOUSING_FUND_RATES } from '../common/TaxCalculator'
 import { promptAction } from '@kit.ArkUI'
 import { hilog } from '@kit.PerformanceAnalysisKit'
 
@@ -12,6 +12,7 @@ struct Index {
     return new SelectOption(d.name, d.amount.toString(), false)
   })
   @State hasCalculated: boolean = false
+  @State calcVersion: number = 0
   @State result: TaxResult | null = null
 
   aboutToAppear(): void {
@@ -19,27 +20,45 @@ struct Index {
   }
 
   doCalculate(): void {
-    const salary = parseFloat(this.salaryText)
-    if (isNaN(salary) || salary <= 0) {
-      promptAction.showToast({ message: '请输入有效的税前工资', duration: 2000 })
-      return
+    try {
+      const salary = parseFloat(this.salaryText)
+      if (isNaN(salary) || salary <= 0) {
+        promptAction.showToast({ message: '请输入有效的税前工资', duration: 2000 })
+        return
+      }
+      const socialBase = parseFloat(this.socialBaseText) || 0
+      const deductionTotal = this.deductions
+        .filter(d => d.checked)
+        .reduce((sum, d) => sum + parseFloat(d.value), 0)
+      this.result = calculateTax(salary, this.housingFundRate, socialBase, deductionTotal)
+      this.calcVersion++
+      this.hasCalculated = true
+    } catch (e) {
+      hilog.error(0x0001, 'TaxCalc', `doCalculate error: ${JSON.stringify(e)}`)
+      promptAction.showToast({ message: `计算出错: ${e}`, duration: 3000 })
     }
-    const socialBase = parseFloat(this.socialBaseText) || 0
-    SPECIAL_DEDUCTIONS.forEach((d, i) => {
-      d.selected = this.deductions[i].checked
-    })
-    this.result = calculateTax(salary, this.housingFundRate, socialBase, SPECIAL_DEDUCTIONS)
-    this.hasCalculated = true
   }
 
   build() {
     Scroll() {
       Column({ space: 16 }) {
-        Text('💰 个税计算器')
-          .fontSize(24)
+        Column() {
+          Image($r('app.media.logo'))
+            .width(120)
+            .height(120)
+            .objectFit(ImageFit.Contain)
+        }
+        .width('100%')
+        .alignItems(HorizontalAlign.Center)
+        .padding(20)
+        .backgroundColor('#ffffff')
+        .borderRadius(16)
+        .margin({ top: 24 })
+
+        Text('个税计算器')
+          .fontSize(22)
           .fontWeight(FontWeight.Bold)
           .fontColor('#1a1a2e')
-          .margin({ top: 24 })
           .width('100%')
 
         Text('2024版税率 · 七级超额累进')
@@ -162,8 +181,64 @@ struct Index {
           .width('100%')
           .onClick(() => { this.doCalculate() })
 
-        if (this.hasCalculated && this.result) {
-          this.resultCard(this.result)
+        if (this.hasCalculated && this.result && this.calcVersion > 0) {
+          Column({ space: 12 }) {
+            Text('📊 计算结果')
+              .fontSize(15)
+              .fontWeight(FontWeight.Medium)
+              .fontColor('#374151')
+              .width('100%')
+
+            Column() {
+              Text('税后月收入')
+                .fontSize(12)
+                .fontColor('#9ca3af')
+              Text(`${this.result!.salaryAfterTax.toFixed(2)}`)
+                .fontSize(36)
+                .fontWeight(FontWeight.Bold)
+                .fontColor('#1a1a2e')
+              Text('元')
+                .fontSize(13)
+                .fontColor('#9ca3af')
+            }
+            .width('100%')
+            .alignItems(HorizontalAlign.Center)
+            .padding({ top: 8, bottom: 8 })
+
+            Divider()
+              .color('#f3f4f6')
+
+            this.resultRow('税前工资', `${this.result!.salaryBeforeTax} 元`)
+            this.resultRow('五险一金', `- ${this.result!.fiveInsuranceTotal.toFixed(2)} 元`)
+            this.resultRow('应纳税所得额', `${this.result!.taxableIncome.toFixed(2)} 元`)
+            this.resultRow('适用税率', `${(this.result!.taxRate * 100).toFixed(0)}%`)
+            this.resultRow('个人所得税', `- ${this.result!.incomeTax} 元`)
+            this.resultRow('实际税负率', `${this.result!.effectiveRate.toFixed(2)}%`)
+
+            Row({ space: 4 }) {
+              Text('💵 税后到手')
+                .fontSize(14)
+                .fontColor('#374151')
+              Blank()
+              Text(`${this.result!.salaryAfterTax.toFixed(2)} 元`)
+                .fontSize(16)
+                .fontWeight(FontWeight.Bold)
+                .fontColor('#6366f1')
+            }
+            .width('100%')
+            .padding({ top: 8, bottom: 4 })
+
+            if (this.result!.incomeTax === 0) {
+              Text('🎉 无需缴纳个税')
+                .fontSize(13)
+                .fontColor('#10b981')
+                .fontWeight(FontWeight.Medium)
+            }
+          }
+          .width('100%')
+          .padding(16)
+          .backgroundColor('#ffffff')
+          .borderRadius(12)
         }
 
         Row() {
@@ -215,66 +290,6 @@ struct Index {
           .fontColor('#9ca3af')
       }
       .width('100%')
-    }
-    .width('100%')
-    .padding(16)
-    .backgroundColor('#ffffff')
-    .borderRadius(12)
-  }
-
-  @Builder resultCard(result: TaxResult) {
-    Column({ space: 12 }) {
-      Text('📊 计算结果')
-        .fontSize(15)
-        .fontWeight(FontWeight.Medium)
-        .fontColor('#374151')
-        .width('100%')
-
-      Column() {
-        Text('税后月收入')
-          .fontSize(12)
-          .fontColor('#9ca3af')
-        Text(`${result.salaryAfterTax.toFixed(2)}`)
-          .fontSize(36)
-          .fontWeight(FontWeight.Bold)
-          .fontColor('#1a1a2e')
-        Text('元')
-          .fontSize(13)
-          .fontColor('#9ca3af')
-      }
-      .width('100%')
-      .alignItems(HorizontalAlign.Center)
-      .padding({ top: 8, bottom: 8 })
-
-      Divider()
-        .color('#f3f4f6')
-
-      this.resultRow('税前工资', `${result.salaryBeforeTax.toLocaleString()} 元`)
-      this.resultRow('五险一金', `- ${result.fiveInsuranceTotal.toFixed(2)} 元`)
-      this.resultRow('应纳税所得额', `${result.taxableIncome.toFixed(2)} 元`)
-      this.resultRow('适用税率', `${(result.taxRate * 100).toFixed(0)}%`)
-      this.resultRow('个人所得税', `- ${result.incomeTax.toLocaleString()} 元`)
-      this.resultRow('实际税负率', `${result.effectiveRate.toFixed(2)}%`)
-
-      Row({ space: 4 }) {
-        Text('💵 税后到手')
-          .fontSize(14)
-          .fontColor('#374151')
-        Blank()
-        Text(`${result.salaryAfterTax.toFixed(2)} 元`)
-          .fontSize(16)
-          .fontWeight(FontWeight.Bold)
-          .fontColor('#6366f1')
-      }
-      .width('100%')
-      .padding({ top: 8, bottom: 4 })
-
-      if (result.incomeTax === 0) {
-        Text('🎉 无需缴纳个税')
-          .fontSize(13)
-          .fontColor('#10b981')
-          .fontWeight(FontWeight.Medium)
-      }
     }
     .width('100%')
     .padding(16)

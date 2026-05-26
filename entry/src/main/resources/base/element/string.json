@@ -1,10 +1,6 @@
 {
   "string": [
     {
-      "name": "app_name",
-      "value": "个税计算器"
-    },
-    {
       "name": "module_desc",
       "value": "个税计算器 - 口袋万物系列"
     },

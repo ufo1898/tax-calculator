@@ -84,7 +84,7 @@ export function calculateTax(
   salary: number,
   housingFundRate: number,    // 公积金比例 5-12
   socialBase: number,         // 社保缴费基数（0=按实际工资）
-  selectedDeductions: SpecialDeduction[],
+  deductionTotal: number,     // 专项附加扣除合计
   si: SocialInsurance = new SocialInsurance()
 ): TaxResult {
   // 社保
@@ -93,11 +93,6 @@ export function calculateTax(
   // 公积金
   const baseForFund = socialBase > 0 ? socialBase : salary
   const housingFund = baseForFund * (housingFundRate / 100)
-
-  // 专项附加扣除
-  const deductionTotal = selectedDeductions
-    .filter(d => d.selected)
-    .reduce((sum, d) => sum + d.amount, 0)
 
   // 应纳税所得额
   const taxableIncome = Math.max(0, salary - socialIns - housingFund - TAX_THRESHOLD - deductionTotal)
@@ -114,7 +109,7 @@ export function calculateTax(
   }
 
   // 个税
-  const incomeTax = Math.round(taxableIncome * taxRate - quickDed)
+  const incomeTax = Math.max(0, Math.round(taxableIncome * taxRate - quickDed))
 
   const fiveTotal = socialIns + housingFund
   const salaryAfterTax = salary - fiveTotal - incomeTax

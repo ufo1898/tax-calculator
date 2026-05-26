@@ -3,3 +3,14 @@ build/
 node_modules/
 local.properties
 *.log
+.idea/
+.appanalyzer/
+material/
+oh_modules/
+oh-package-lock.json5
+*.p12
+screenshot*.jpeg
+taxcalc*.p12
+taxcalc*.csr
+*.cer
+*.p7b

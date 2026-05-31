@@ -1,0 +1,60 @@
+Status: active
+
+To                         Action      From
+--                         ------      ----
+22/tcp                     ALLOW       Anywhere                   # SSH
+80/tcp                     ALLOW       Anywhere                   # HTTP
+443/tcp                    ALLOW       Anywhere                   # HTTPS
+8706/tcp                   ALLOW       Anywhere                   # Hermes
+8765/tcp                   ALLOW       Anywhere                   # agent-chat
+8766/tcp                   ALLOW       Anywhere                  
+45923/tcp                  ALLOW       Anywhere                   # 3X-UI Panel
+51820/udp                  ALLOW       Anywhere                   # WireGuard
+8444/tcp                   ALLOW       Anywhere                   # XUI-panel-nginx
+2053/tcp                   ALLOW       Anywhere                   # 3X-UI
+8767/tcp                   ALLOW       Anywhere                  
+8443/tcp                   ALLOW       47.0.0.0/8                 # CN-IP
+8443/tcp                   ALLOW       58.0.0.0/7                 # CN-IP
+8443/tcp                   ALLOW       60.0.0.0/7                 # CN-IP
+8443/tcp                   ALLOW       110.0.0.0/7                # CN-IP
+8443/tcp                   ALLOW       112.0.0.0/5                # CN-IP
+8443/tcp                   ALLOW       120.0.0.0/8                # CN-IP
+8443/tcp                   ALLOW       170.0.0.0/7                # CN-IP
+8443/tcp                   ALLOW       174.0.0.0/7                # CN-IP
+8443/tcp                   ALLOW       180.0.0.0/7                # CN-IP
+8443/tcp                   ALLOW       182.0.0.0/7                # CN-IP
+8443/tcp                   ALLOW       202.0.0.0/7                # CN-IP
+8443/tcp                   ALLOW       210.0.0.0/7                # CN-IP
+8443/tcp                   ALLOW       218.0.0.0/7                # CN-IP
+8443/tcp                   ALLOW       220.0.0.0/6                # CN-IP
+8443/tcp                   ALLOW       222.0.0.0/7                # CN-IP
+8443/tcp                   ALLOW       122.0.0.0/7                # CN-IP
+8443/tcp                   ALLOW       26.0.0.0/7                 # CN-IP
+8443/tcp                   ALLOW       36.0.0.0/7                 # CN-IP
+8443/tcp                   ALLOW       42.0.0.0/7                 # CN-IP
+8443/tcp                   ALLOW       48.0.0.0/7                 # CN-IP
+8443/tcp                   ALLOW       100.0.0.0/7                # CN-IP
+8443/tcp                   ALLOW       106.0.0.0/7                # CN-IP
+8443/tcp                   ALLOW       112.0.0.0/7                # CN-IP
+8443/tcp                   ALLOW       114.0.0.0/7                # CN-IP
+8443/tcp                   ALLOW       116.0.0.0/7                # CN-IP
+8443/tcp                   ALLOW       118.0.0.0/7                # CN-IP
+8443/tcp                   ALLOW       120.0.0.0/7                # CN-IP
+8443/tcp                   ALLOW       47.83.156.11               # 001-HK
+8443/tcp                   ALLOW       8.134.19.73                # 005-GZ
+6006/tcp                   ALLOW       Anywhere                  
+6008/tcp                   ALLOW       Anywhere                  
+22/tcp (v6)                ALLOW       Anywhere (v6)              # SSH
+80/tcp (v6)                ALLOW       Anywhere (v6)              # HTTP
+443/tcp (v6)               ALLOW       Anywhere (v6)              # HTTPS
+8706/tcp (v6)              ALLOW       Anywhere (v6)              # Hermes
+8765/tcp (v6)              ALLOW       Anywhere (v6)              # agent-chat
+8766/tcp (v6)              ALLOW       Anywhere (v6)             
+45923/tcp (v6)             ALLOW       Anywhere (v6)              # 3X-UI Panel
+51820/udp (v6)             ALLOW       Anywhere (v6)              # WireGuard
+8444/tcp (v6)              ALLOW       Anywhere (v6)              # XUI-panel-nginx
+2053/tcp (v6)              ALLOW       Anywhere (v6)              # 3X-UI
+8767/tcp (v6)              ALLOW       Anywhere (v6)             
+6006/tcp (v6)              ALLOW       Anywhere (v6)             
+6008/tcp (v6)              ALLOW       Anywhere (v6)             
+
